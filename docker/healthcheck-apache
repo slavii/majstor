@@ -1,0 +1,3 @@
+#!/bin/sh
+# PHP-FPM healthcheck placeholder
+# Configure pm.status_path = /status in php-fpm to enable

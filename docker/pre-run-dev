@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+
+# This script working dir is application's directory, and all ENV variables from .env and OS are available here
+# using ${ENV_NAME} with defaults taken from .env and .env.<env>
+
+# Put Custom Ad-hoc scripts below:

@@ -1,0 +1,25 @@
+services:
+    app:
+        restart: unless-stopped
+        container_name: rimdeal
+        extra_hosts:
+          - "host.docker.internal:host-gateway"
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+            target: app-dev
+        volumes:
+            - ./:/app
+        networks:
+            - web
+        labels:
+            - traefik.enable=true
+
+            - traefik.http.routers.rimdeal.rule=Host(`rimdeal.localhost`)
+            - traefik.http.routers.rimdeal.entrypoints=web
+            - traefik.http.routers.rimdeal.service=rimdeal
+
+            - traefik.http.services.rimdeal.loadbalancer.server.port=8080
+networks:
+    web:
+        external: true
