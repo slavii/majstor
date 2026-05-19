@@ -1,25 +1,89 @@
 services:
-    app:
-        restart: unless-stopped
-        container_name: rimdeal
-        extra_hosts:
-          - "host.docker.internal:host-gateway"
-        build:
-            context: .
-            dockerfile: docker/Dockerfile
-            target: app-dev
-        volumes:
-            - ./:/app
-        networks:
-            - web
-        labels:
-            - traefik.enable=true
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: majstor
+      MYSQL_USER: majstor
+      MYSQL_PASSWORD: majstor_secret
+    ports:
+      - "13306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-            - traefik.http.routers.rimdeal.rule=Host(`rimdeal.localhost`)
-            - traefik.http.routers.rimdeal.entrypoints=web
-            - traefik.http.routers.rimdeal.service=rimdeal
+  app:
+    build:
+      context: .
+      target: dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/node_modules
+    env_file: .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: majstor
+      DB_USERNAME: majstor
+      DB_PASSWORD: majstor_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "-c", "npm install && php artisan migrate --force && php artisan storage:link 2>/dev/null; npx concurrently 'php artisan serve --host=0.0.0.0 --port=8000' 'npx vite --host 0.0.0.0' --names=laravel,vite --kill-others"]
 
-            - traefik.http.services.rimdeal.loadbalancer.server.port=8080
-networks:
-    web:
-        external: true
+  queue:
+    build:
+      context: .
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/vendor
+    env_file: .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: majstor
+      DB_USERNAME: majstor
+      DB_PASSWORD: majstor_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    command: php artisan queue:work --tries=3 --timeout=90
+
+  # One-off setup: docker compose run --rm migrate
+  migrate:
+    build:
+      context: .
+      target: dev
+    env_file: .env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: majstor
+      DB_USERNAME: majstor
+      DB_PASSWORD: majstor_secret
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "php artisan migrate --force &&
+             php artisan db:seed --force &&
+             echo '=== Setup complete ==='"
+    profiles: [setup]
+
+volumes:
+  dbdata:

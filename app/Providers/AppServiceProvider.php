@@ -2,21 +2,26 @@
 
 namespace App\Providers;
 
+use App\Services\AI\AIServiceInterface;
+use App\Services\AI\FakeAIService;
+use App\Services\AI\OpenAIService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        $this->app->bind(AIServiceInterface::class, function () {
+            $key = config('services.openai.api_key');
+
+            if ($key && $key !== 'your-openai-api-key') {
+                return new OpenAIService;
+            }
+
+            return new FakeAIService;
+        });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         //

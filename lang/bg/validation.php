@@ -1,0 +1,50 @@
+<?php
+
+return [
+    'accepted' => 'Полето :attribute трябва да бъде прието.',
+    'between' => [
+        'numeric' => 'Полето :attribute трябва да е между :min и :max.',
+        'string' => 'Полето :attribute трябва да е между :min и :max символа.',
+    ],
+    'confirmed' => 'Потвърждението на :attribute не съвпада.',
+    'email' => 'Полето :attribute трябва да е валиден имейл адрес.',
+    'exists' => 'Избраната стойност за :attribute е невалидна.',
+    'image' => 'Полето :attribute трябва да е изображение.',
+    'max' => [
+        'numeric' => 'Полето :attribute не може да е по-голямо от :max.',
+        'string' => 'Полето :attribute не може да е по-дълго от :max символа.',
+        'file' => 'Полето :attribute не може да е по-голямо от :max килобайта.',
+        'array' => 'Полето :attribute не може да има повече от :max елемента.',
+    ],
+    'min' => [
+        'numeric' => 'Полето :attribute трябва да е поне :min.',
+        'string' => 'Полето :attribute трябва да е поне :min символа.',
+        'file' => 'Полето :attribute трябва да е поне :min килобайта.',
+    ],
+    'numeric' => 'Полето :attribute трябва да е число.',
+    'required' => 'Полето :attribute е задължително.',
+    'string' => 'Полето :attribute трябва да е текст.',
+    'unique' => 'Стойността на :attribute вече е заета.',
+    'date' => 'Полето :attribute не е валидна дата.',
+    'in' => 'Избраната стойност за :attribute е невалидна.',
+
+    'attributes' => [
+        'name' => 'име',
+        'email' => 'имейл',
+        'password' => 'парола',
+        'password_confirmation' => 'потвърждение на парола',
+        'current_password' => 'текуща парола',
+        'phone' => 'телефон',
+        'address' => 'адрес',
+        'notes' => 'бележки',
+        'title' => 'заглавие',
+        'description' => 'описание',
+        'status' => 'статус',
+        'scheduled_date' => 'насрочена дата',
+        'estimated_price' => 'приблизителна цена',
+        'actual_price' => 'реална цена',
+        'client_id' => 'клиент',
+        'prompt' => 'описание на заявката',
+        'photos' => 'снимки',
+    ],
+];
