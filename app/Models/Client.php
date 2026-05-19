@@ -36,4 +36,9 @@ class Client extends Model
     {
         return $this->hasMany(AiQuery::class);
     }
+
+    public function communications(): HasMany
+    {
+        return $this->hasMany(ClientCommunication::class)->latest();
+    }
 }

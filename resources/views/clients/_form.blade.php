@@ -42,11 +42,13 @@
     </div>
 </div>
 
-<div class="mt-6 flex gap-3">
-    <button type="submit" class="flex-1 rounded-lg bg-blue-600 py-3 text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-800 transition">
-        {{ $submitLabel ?? 'Запази' }}
+<div class="mt-6 flex gap-3" x-data="{ saving: false }">
+    <button type="submit" @click="saving = true" :disabled="saving"
+            class="flex-1 rounded-xl bg-blue-600 py-3.5 text-sm font-medium text-white active:bg-blue-700 disabled:opacity-60 transition">
+        <span x-show="!saving">{{ $submitLabel ?? 'Запази' }}</span>
+        <span x-show="saving" x-cloak>Запазване...</span>
     </button>
-    <a href="{{ url()->previous() }}" class="rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+    <a href="{{ url()->previous() }}" class="rounded-xl border border-gray-200 px-6 py-3.5 text-sm font-medium text-gray-600 active:bg-gray-50 transition">
         Отказ
     </a>
 </div>

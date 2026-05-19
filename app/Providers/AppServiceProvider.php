@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Services\AI\AIServiceInterface;
 use App\Services\AI\FakeAIService;
 use App\Services\AI\OpenAIService;
+use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        Carbon::setLocale('bg');
     }
 }

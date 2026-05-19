@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\JobPhotoRequest;
 use App\Http\Requests\JobRequest;
+use App\Models\ClientCommunication;
 use App\Models\Job;
 use App\Services\JobService;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class JobController extends Controller
     {
         $this->authorize('view', $job);
 
-        $job->load(['client', 'photos', 'comments.user', 'statusHistory.user']);
+        $job->load(['client.communications' => fn ($q) => $q->latest()->limit(10), 'photos', 'comments.user', 'statusHistory.user', 'voiceNotes.user']);
 
         return view('jobs.show', compact('job'));
     }
@@ -77,7 +78,9 @@ class JobController extends Controller
     {
         $this->authorize('update', $job);
 
-        $this->service->uploadPhotos($job, $request->file('photos'));
+        $category = $request->input('category', 'general');
+
+        $this->service->uploadPhotos($job, $request->file('photos'), $category);
 
         return back()->with('success', 'Снимките са качени.');
     }
@@ -100,5 +103,38 @@ class JobController extends Controller
         $this->service->addComment($job, $request->user(), $request->input('body'));
 
         return back()->with('success', 'Коментарът е добавен.');
+    }
+
+    public function updateChecklist(Request $request, Job $job)
+    {
+        $this->authorize('update', $job);
+
+        $request->validate(['checklist' => 'required|json']);
+
+        $job->update(['checklist' => json_decode($request->input('checklist'), true)]);
+
+        return back()->with('success', 'Чеклистът е обновен.');
+    }
+
+    public function addCommunication(Request $request, Job $job)
+    {
+        $this->authorize('update', $job);
+
+        $request->validate([
+            'type' => 'required|in:call,viber,sms,email,in_person,other',
+            'direction' => 'required|in:inbound,outbound',
+            'summary' => 'required|string|max:2000',
+        ]);
+
+        ClientCommunication::create([
+            'client_id' => $job->client_id,
+            'user_id' => $request->user()->id,
+            'job_id' => $job->id,
+            'type' => $request->input('type'),
+            'direction' => $request->input('direction'),
+            'summary' => $request->input('summary'),
+        ]);
+
+        return back()->with('success', 'Комуникацията е записана.');
     }
 }

@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/jobs/{job}/photos', [JobController::class, 'uploadPhotos'])->name('jobs.photos.upload');
     Route::delete('/jobs/{job}/photos/{photo}', [JobController::class, 'deletePhoto'])->name('jobs.photos.delete');
     Route::post('/jobs/{job}/comments', [JobController::class, 'addComment'])->name('jobs.comments.store');
+    Route::put('/jobs/{job}/checklist', [JobController::class, 'updateChecklist'])->name('jobs.checklist.update');
+    Route::post('/jobs/{job}/communications', [JobController::class, 'addCommunication'])->name('jobs.communications.store');
 
     // AI Assistant
     Route::get('/ai', [AIAssistantController::class, 'index'])->name('ai.index');

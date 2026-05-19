@@ -16,6 +16,7 @@ class JobPhotoRequest extends FormRequest
         return [
             'photos' => ['required', 'array', 'max:10'],
             'photos.*' => ['image', 'max:5120'],
+            'category' => ['sometimes', 'in:before,after,progress,general'],
         ];
     }
 

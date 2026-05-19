@@ -8,7 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 class JobPhoto extends Model
 {
-    protected $fillable = ['job_id', 'path', 'caption'];
+    protected $fillable = ['job_id', 'path', 'category', 'caption'];
+
+    public const CATEGORIES = [
+        'before' => 'Преди',
+        'after' => 'След',
+        'progress' => 'В процес',
+        'general' => 'Общи',
+    ];
 
     public function job(): BelongsTo
     {
@@ -18,5 +25,10 @@ class JobPhoto extends Model
     public function url(): string
     {
         return Storage::url($this->path);
+    }
+
+    public function categoryLabel(): string
+    {
+        return self::CATEGORIES[$this->category] ?? $this->category;
     }
 }

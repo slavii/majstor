@@ -24,6 +24,8 @@ class JobRequest extends FormRequest
             'estimated_price' => ['nullable', 'numeric', 'min:0'],
             'actual_price' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string', 'max:5000'],
+            'checklist' => ['nullable', 'json'],
+            'internal_notes' => ['nullable', 'string', 'max:10000'],
         ];
     }
 

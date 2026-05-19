@@ -25,6 +25,8 @@ class Job extends Model
         'estimated_price',
         'actual_price',
         'notes',
+        'checklist',
+        'internal_notes',
     ];
 
     protected function casts(): array
@@ -33,6 +35,7 @@ class Job extends Model
             'scheduled_date' => 'date',
             'estimated_price' => 'decimal:2',
             'actual_price' => 'decimal:2',
+            'checklist' => 'array',
         ];
     }
 
@@ -67,6 +70,16 @@ class Job extends Model
     public function statusHistory(): HasMany
     {
         return $this->hasMany(JobStatusHistory::class)->latest();
+    }
+
+    public function voiceNotes(): HasMany
+    {
+        return $this->hasMany(VoiceNote::class)->latest();
+    }
+
+    public function communications(): HasMany
+    {
+        return $this->hasMany(ClientCommunication::class)->latest();
     }
 
     public function statusLabel(): string

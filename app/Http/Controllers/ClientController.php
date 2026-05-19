@@ -38,7 +38,10 @@ class ClientController extends Controller
     {
         $this->authorize('view', $client);
 
-        $client->load(['jobs' => fn ($q) => $q->latest()->limit(10)]);
+        $client->load([
+            'jobs' => fn ($q) => $q->latest()->limit(10),
+            'communications' => fn ($q) => $q->with(['user', 'job'])->latest()->limit(10),
+        ]);
 
         return view('clients.show', compact('client'));
     }

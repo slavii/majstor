@@ -2,15 +2,17 @@
 <html lang="bg" class="h-full bg-gray-50">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>{{ config('app.name', 'Majstor') }} — {{ $title ?? 'Табло' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full font-sans antialiased text-gray-900" x-data="{ mobileMenu: false }">
+<body class="h-full font-sans antialiased text-gray-900">
 
     {{-- Top bar --}}
-    <header class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div class="flex items-center justify-between px-4 h-14 max-w-5xl mx-auto">
             <a href="{{ route('dashboard') }}" class="text-xl font-bold text-blue-600 tracking-tight">Majstor</a>
 
@@ -22,11 +24,15 @@
                 <x-nav-item href="{{ route('ai.index') }}" :active="request()->routeIs('ai.*')">AI Помощник</x-nav-item>
             </nav>
 
-            <div class="hidden md:flex items-center gap-3">
-                <span class="text-sm text-gray-500">{{ Auth::user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('profile.edit') }}" class="hidden md:inline text-sm text-gray-500 hover:text-gray-700">{{ Auth::user()->name }}</a>
+                {{-- Mobile: profile icon --}}
+                <a href="{{ route('profile.edit') }}" class="md:hidden p-1.5 -mr-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="hidden md:block">
                     @csrf
-                    <button type="submit" class="text-sm text-gray-400 hover:text-red-500">Изход</button>
+                    <button type="submit" class="text-sm text-gray-400 hover:text-red-500 transition">Изход</button>
                 </form>
             </div>
         </div>
@@ -34,8 +40,9 @@
 
     {{-- Flash messages --}}
     @if(session('success'))
-        <div class="max-w-5xl mx-auto px-4 mt-3" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)">
-            <div class="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+        <div class="max-w-5xl mx-auto px-4 mt-3" x-data="{ show: true }" x-show="show" x-transition.opacity x-init="setTimeout(() => show = false, 3500)">
+            <div class="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
                 {{ session('success') }}
             </div>
         </div>
@@ -43,20 +50,21 @@
 
     @if(session('error'))
         <div class="max-w-5xl mx-auto px-4 mt-3">
-            <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+            <div class="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>
                 {{ session('error') }}
             </div>
         </div>
     @endif
 
     {{-- Main content --}}
-    <main class="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-6">
+    <main class="max-w-5xl mx-auto px-4 pt-5 pb-28 md:pb-8">
         {{ $slot }}
     </main>
 
-    {{-- Mobile bottom navigation --}}
-    <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-gray-200 md:hidden">
-        <div class="flex justify-around py-2">
+    {{-- Mobile bottom navigation - sticky with safe area --}}
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 pb-[env(safe-area-inset-bottom)] md:hidden">
+        <div class="grid grid-cols-4 h-16">
             <x-mobile-nav href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 <x-slot:icon>
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>

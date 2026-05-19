@@ -65,12 +65,12 @@ class JobService
         $job->delete();
     }
 
-    public function uploadPhotos(Job $job, array $files): void
+    public function uploadPhotos(Job $job, array $files, string $category = 'general'): void
     {
         foreach ($files as $file) {
             /** @var UploadedFile $file */
             $path = $file->store("jobs/{$job->id}", 'public');
-            $job->photos()->create(['path' => $path]);
+            $job->photos()->create(['path' => $path, 'category' => $category]);
         }
     }
 
